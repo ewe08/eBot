@@ -1,13 +1,17 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import Command
 
 from core.handlers.basic import get_start
+from core.handlers.easter_egg import easter_egg
 from core.settings import settings
+from core.utils.commands import set_commands
 
 
 async def start_bot(bot: Bot):
+    await set_commands(bot)
     await bot.send_message(settings.bots.admin_id, text='Бот запущен')
 
 
@@ -28,7 +32,8 @@ async def start():
     dp.startup.register(start_bot)
     dp.shutdown.register(stop_bot)
 
-    dp.message.register(get_start)
+    dp.message.register(get_start, Command(commands=['start']))
+    dp.message.register(easter_egg, F.text == 'Бот гей!')
     try:
         await dp.start_polling(bot)
     finally:
