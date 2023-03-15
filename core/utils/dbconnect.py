@@ -30,7 +30,8 @@ class Request:
         return await self.connector.fetch(query)
 
     async def update_data_score(self, user_id, chat_id, value):
-        query = f"UPDATE datausers SET score = score + {value} " \
+        query = f"UPDATE datausers " \
+                f"SET (score, all_score) = (score + {value}, all_score + {value}) " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)
 
