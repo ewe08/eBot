@@ -54,3 +54,21 @@ class Request:
         query = f"UPDATE datausers SET send_in_day = send_in_day + {value} " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)
+
+    async def get_data_day_in_chat(self, chat_id):
+        query = f"SELECT (id, for_day) FROM datausers WHERE chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def get_data_week_in_chat(self, chat_id):
+        query = f"SELECT (id, user_id, for_week) FROM datausers WHERE chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def update_data_day_by_id(self, id_row, value):
+        query = f"UPDATE datausers SET for_day = {value} " \
+                f"WHERE id={id_row}"
+        await self.connector.execute(query)
+
+    async def update_data_week_by_id(self, id_row, value):
+        query = f"UPDATE datausers SET for_week = for_week + {value} " \
+                f"WHERE id={id_row}"
+        await self.connector.execute(query)
