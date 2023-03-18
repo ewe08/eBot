@@ -9,21 +9,21 @@ async def send_score(message: Message, request: Request):
     await new_message(message, request)
     try:
         value = int(message.text.split()[1])
-        limit = (await request.get_data_limit(message.from_user.id, message.chat.id))[0][0]
-        score = (await request.get_data_score(message.from_user.id, message.chat.id))[0][0]
+        limit = (await request.get_limit(message.from_user.id, message.chat.id))[0][0]
+        score = (await request.get_score(message.from_user.id, message.chat.id))[0][0]
 
         if score < value:
             raise NotEnoughTokensError
         if limit + value > 200:
             raise ExceededDailyLimitError(limit)
 
-        await request.update_data_limit(message.from_user.id, message.chat.id, value)
-        await request.update_data_score(
+        await request.update_limit(message.from_user.id, message.chat.id, value)
+        await request.update_score(
             message.reply_to_message.from_user.id,
             message.chat.id,
             value,
         )
-        await request.update_data_score(
+        await request.update_score(
             message.from_user.id,
             message.chat.id,
             -value,
