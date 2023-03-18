@@ -1,7 +1,6 @@
 import asyncio
 import logging
 
-import asyncpg
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
@@ -19,12 +18,12 @@ from core.utils.dbconnect import create_pool
 
 async def start_bot(bot: Bot):
     await set_commands(bot)
-    # await bot.send_message(settings.bots.admin_id, text='Бот запущен')
+    await bot.send_message(settings.bots.admin_id, text='Бот запущен')
 
 
 async def stop_bot(bot: Bot):
     pass
-    # await bot.send_message(settings.bots.admin_id, text='Бот остановлен')
+    await bot.send_message(settings.bots.admin_id, text='Бот остановлен')
 
 
 async def start():
