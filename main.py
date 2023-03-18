@@ -2,15 +2,19 @@ import asyncio
 import logging
 
 import asyncpg
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 
 from core.handlers.basic import new_message
 from core.handlers.get import get_stats, get_help, get_profile
 from core.handlers.send import send_score
+from core.handlers.apshed import collect_data_every_day, collect_data_every_week, \
+    collect_data_every_month
 from core.middlewares.dbmiddleware import DbSession
 from core.settings import settings
 from core.utils.commands import set_commands
+from core.utils.dbconnect import create_pool
 
 
 async def start_bot(bot: Bot):
@@ -23,17 +27,6 @@ async def stop_bot(bot: Bot):
     # await bot.send_message(settings.bots.admin_id, text='Бот остановлен')
 
 
-async def create_pool():
-    return await asyncpg.create_pool(
-        user=settings.databases.user,
-        password=settings.databases.password,
-        database=settings.databases.database,
-        host=settings.databases.host,
-        port=settings.databases.port,
-        command_timeout=settings.databases.command_timeout,
-    )
-
-
 async def start():
     logging.basicConfig(
         level=logging.INFO,
@@ -43,9 +36,37 @@ async def start():
     bot = Bot(token=settings.bots.bot_token, parse_mode='HTML')
     pull_connect = await create_pool()
 
+    scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
+    scheduler.add_job(
+        collect_data_every_day,
+        trigger='cron',
+        hour=18,
+        kwargs={
+            'chat_id': settings.bots.work_chat_id,
+        }
+    )
+    scheduler.add_job(
+        collect_data_every_week,
+        trigger='cron',
+        day_of_week='mon',
+        hour=18,
+        kwargs={
+            'chat_id': settings.bots.work_chat_id,
+        }
+    )
+    scheduler.add_job(
+        collect_data_every_month,
+        trigger='cron',
+        day=1,
+        hour=18,
+        kwargs={
+            'bot': bot,
+            'admin_chat_id': settings.bots.admin_chat_id,
+            'chat_id': settings.bots.work_chat_id,
+        }
+    )
     dp = Dispatcher()
     dp.update.middleware.register(DbSession(pull_connect))
-
     dp.startup.register(start_bot)
     dp.shutdown.register(stop_bot)
 
@@ -56,6 +77,7 @@ async def start():
     dp.message.register(new_message)
 
     try:
+        scheduler.start()
         await dp.start_polling(bot)
     finally:
         await bot.session.close()

@@ -1,4 +1,16 @@
 import asyncpg
+from core.settings import settings
+
+
+async def create_pool():
+    return await asyncpg.create_pool(
+        user=settings.databases.user,
+        password=settings.databases.password,
+        database=settings.databases.database,
+        host=settings.databases.host,
+        port=settings.databases.port,
+        command_timeout=settings.databases.command_timeout,
+    )
 
 
 class Request:
@@ -25,32 +37,76 @@ class Request:
                 f"WHERE chat_id={chat_id} ORDER BY score DESC LIMIT 10"
         return await self.connector.fetch(query)
 
-    async def get_data_score(self, user_id, chat_id):
+    async def get_score_in_chat(self, chat_id):
+        query = f"SELECT (user_id, chat_id, score) FROM datausers " \
+                f"WHERE chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def get_score(self, user_id, chat_id):
         query = f"SELECT (score) FROM datausers WHERE user_id={user_id} AND chat_id={chat_id}"
         return await self.connector.fetch(query)
 
-    async def update_data_score(self, user_id, chat_id, value):
+    async def update_score(self, user_id, chat_id, value):
         query = f"UPDATE datausers " \
                 f"SET (score, all_score) = (score + {value}, all_score + {value}) " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)
 
-    async def update_data_day(self, user_id, chat_id, value):
-        query = f"UPDATE datausers SET for_day = for_day + {value} " \
+    async def set_score(self, user_id, chat_id, value):
+        query = f"UPDATE datausers " \
+                f"SET score = {value} " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)
 
-    async def update_data_week(self, user_id, chat_id, value):
-        query = f"UPDATE datausers SET for_week = for_week + {value} " \
-                f"WHERE user_id={user_id} AND chat_id={chat_id}"
-        await self.connector.execute(query)
-
-    async def get_data_limit(self, user_id, chat_id):
+    async def get_limit(self, user_id, chat_id):
         query = f"SELECT (send_in_day) FROM datausers " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         return await self.connector.fetch(query)
 
-    async def update_data_limit(self, user_id, chat_id, value):
+    async def update_limit(self, user_id, chat_id, value):
         query = f"UPDATE datausers SET send_in_day = send_in_day + {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def set_limit(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET send_in_day = {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def get_day_data_in_chat(self, chat_id):
+        query = f"SELECT (user_id, chat_id, for_day) FROM datausers WHERE chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def get_day_data(self, user_id, chat_id):
+        query = f"SELECT (for_day) FROM datausers " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def update_day_data(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET for_day = for_day + {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def set_day_data(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET for_day = {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def get_week_date_in_chat(self, chat_id):
+        query = f"SELECT (user_id, chat_id, for_week) FROM datausers WHERE chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def get_week_data(self, user_id, chat_id):
+        query = f"SELECT (for_day) FROM datausers " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def update_week_data(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET for_week = for_week + {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def set_week_data(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET for_week = {value} " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)

@@ -7,8 +7,8 @@ from environs import Env
 class Bots:
     bot_token: str
     admin_id: int
-    chat_id: int
-
+    admin_chat_id: int
+    work_chat_id: int
 
 @dataclass
 class DataBase:
@@ -34,7 +34,8 @@ def get_settings(path: str):
         bots=Bots(
             bot_token=env.str('TOKEN'),
             admin_id=env.int('ADMIN_ID'),
-            chat_id=env.int('CHAT_ID'),
+            admin_chat_id=env.int('ADMIN_CHAT_ID'),
+            work_chat_id=env.int('WORK_CHAT_ID'),
         ),
         databases=DataBase(
             user=env.str('USER'),
@@ -47,4 +48,4 @@ def get_settings(path: str):
     )
 
 
-settings = get_settings('input')
+settings = get_settings('.env')
