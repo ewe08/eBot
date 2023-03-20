@@ -1,6 +1,14 @@
 from aiogram.types import Message
+from aiogram.utils.deep_linking import decode_payload
 
 from core.utils.dbconnect import Request
+
+
+async def start_chat(message: Message, request: Request):
+    start_command, *args = message.text.split()
+    if args:
+        payload = decode_payload(args[0])
+    await message.answer(f"Ну тут типа привет тру ля ля вот ссылка на чат а твой батя гей. Чет такое")
 
 
 async def new_message(message: Message, request: Request):

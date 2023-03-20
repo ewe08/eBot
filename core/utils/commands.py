@@ -22,5 +22,10 @@ async def set_commands(bot: Bot):
             command='profile',
             description='Посмотреть свою статистику',
         ),
+        BotCommand(
+            command='ref',
+            description='Получить реферальную ссылку. '
+                        'Раз в месяц вы будете получать 10% токенов от всех рефералов',
+        ),
     ]
     await bot.set_my_commands(commands, BotCommandScopeDefault())

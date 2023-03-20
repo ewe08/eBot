@@ -5,12 +5,12 @@ from core.handlers.basic import new_message
 
 
 async def get_help(message: Message, request: Request):
-    await new_message(message, request)
+    # await new_message(message, request)
     await message.answer('tut help')
 
 
 async def get_profile(message: Message, request: Request):
-    await new_message(message, request)
+    # await new_message(message, request)
 
     # [0id, 1user_id, 2chat_id, 3username, 4full_name, 5score,]
     # [6for_day, 7for_week, 8send_in_day, 9all_score]
@@ -26,7 +26,7 @@ async def get_profile(message: Message, request: Request):
 
 
 async def get_stats(message: Message, request: Request):
-    await new_message(message, request)
+    # await new_message(message, request)
     data = await request.get_top_users(message.chat.id)
     response = ''
     i = 1
