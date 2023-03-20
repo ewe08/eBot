@@ -6,7 +6,7 @@ from core.utils.exceptions import NotEnoughTokensError, ExceededDailyLimitError
 
 
 async def send_score(message: Message, request: Request):
-    await new_message(message, request)
+    # await new_message(message, request)
     try:
         value = int(message.text.split()[1])
         limit = (await request.get_limit(message.from_user.id, message.chat.id))[0][0]

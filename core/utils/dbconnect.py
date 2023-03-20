@@ -17,6 +17,12 @@ class Request:
     def __init__(self, connector: asyncpg.pool.Pool):
         self.connector = connector
 
+    async def add_data_with_referral(self, user_id, username, fullname, chat_id, referral_id):
+        query = f"INSERT INTO datausers (user_id, full_name, username, chat_id, referral) " \
+                f"VALUES ({user_id}, '{fullname}', '{username}', {chat_id}, {referral_id}) " \
+                f"ON CONFLICT (id) DO UPDATE SET full_name='{fullname}'"
+        await self.connector.execute(query)
+
     async def add_data(self, user_id, username, fullname, chat_id):
         query = f"INSERT INTO datausers (user_id, full_name, username, chat_id) " \
                 f"VALUES ({user_id}, '{fullname}', '{username}', {chat_id}) " \
@@ -55,6 +61,28 @@ class Request:
     async def set_score(self, user_id, chat_id, value):
         query = f"UPDATE datausers " \
                 f"SET score = {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def get_referral_id(self, user_id, chat_id):
+        query = f"SELECT (referral) FROM datausers " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def get_referral_score(self, user_id, chat_id):
+        query = f"SELECT (from_referral) FROM datausers " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def update_referral_score(self, user_id, chat_id, value):
+        query = f"UPDATE datausers " \
+                f"SET from_referral = datausers.from_referral + {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def set_referral_score(self, user_id, chat_id, value):
+        query = f"UPDATE datausers " \
+                f"SET from_referral = {value} " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)
 

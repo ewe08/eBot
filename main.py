@@ -5,11 +5,12 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 
-from core.handlers.basic import new_message
+from core.handlers.apshed import collect_data_every_day, collect_data_every_week
+from core.handlers.apshed import collect_data_every_month
+from core.handlers.basic import new_message, start_chat
 from core.handlers.get import get_stats, get_help, get_profile
 from core.handlers.send import send_score
-from core.handlers.apshed import collect_data_every_day, collect_data_every_week, \
-    collect_data_every_month
+from core.handlers.ref import get_ref
 from core.middlewares.dbmiddleware import DbSession
 from core.settings import settings
 from core.utils.commands import set_commands
@@ -18,7 +19,7 @@ from core.utils.dbconnect import create_pool
 
 async def start_bot(bot: Bot):
     await set_commands(bot)
-    await bot.send_message(settings.bots.admin_id, text='Бот запущен')
+    # await bot.send_message(settings.bots.admin_id, text='Бот запущен')
 
 
 async def stop_bot(bot: Bot):
@@ -64,6 +65,7 @@ async def start():
             'chat_id': settings.bots.work_chat_id,
         }
     )
+
     dp = Dispatcher()
     dp.update.middleware.register(DbSession(pull_connect))
     dp.startup.register(start_bot)
@@ -73,6 +75,9 @@ async def start():
     dp.message.register(get_help, Command(commands=['help']))
     dp.message.register(get_profile, Command(commands=['profile']))
     dp.message.register(send_score, Command(commands=['send']))
+    dp.message.register(get_ref, Command(commands=['ref']))
+    dp.message.register(start_chat, Command(commands=['start']))
+
     dp.message.register(new_message)
 
     try:
