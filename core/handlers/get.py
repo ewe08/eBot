@@ -32,6 +32,6 @@ async def get_stats(message: Message, request: Request):
     i = 1
     for el in data:
         user_id, name, score = [x for x in el][0]
-        response += f'{i}. [{name}](tg://user?id={user_id}) - {score} токен\n'
+        response += f'{i}. {name} - {score} токен\n'
         i += 1
     await message.reply(response, parse_mode='Markdown')

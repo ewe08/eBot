@@ -19,7 +19,7 @@ from core.utils.dbconnect import create_pool
 
 async def start_bot(bot: Bot):
     await set_commands(bot)
-    await bot.send_message(settings.bots.admin_id, text='Бот запущен')
+    # await bot.send_message(settings.bots.admin_id, text='Бот запущен')
 
 
 async def stop_bot(bot: Bot):
@@ -65,6 +65,7 @@ async def start():
             'chat_id': settings.bots.work_chat_id,
         }
     )
+
     dp = Dispatcher()
     dp.update.middleware.register(DbSession(pull_connect))
     dp.startup.register(start_bot)
