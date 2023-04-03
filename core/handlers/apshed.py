@@ -41,4 +41,4 @@ async def collect_data_every_month(bot: Bot, admin_chat_id, chat_id):
         await request.set_referral_score(user_id, chat, 0)
         await request.set_score(user_id, chat, 0)
 
-    # await bot.send_message(admin_chat_id, '#Отчет за месяц')
+    await bot.send_message(admin_chat_id, '#Отчет за месяц')

@@ -1,8 +1,8 @@
 from aiogram import Bot
-from aiogram.types import BotCommand, BotCommandScopeDefault
+from aiogram.types import BotCommand, BotCommandScopeAllGroupChats, BotCommandScopeAllPrivateChats
 
 
-async def set_commands(bot: Bot):
+async def set_commands_chat(bot: Bot):
     commands = [
         BotCommand(
             command='stats',
@@ -13,6 +13,16 @@ async def set_commands(bot: Bot):
             description='Передать свои токены(200 в день). '
                         'Чтобы отправить - ответь на сообщение того, '
                         'кому хочешь отправить командой /send {сумма}',
+        ),
+    ]
+    await bot.set_my_commands(commands, BotCommandScopeAllGroupChats())
+
+
+async def set_commands_user(bot: Bot):
+    commands = [
+        BotCommand(
+            command='start',
+            description='Начать чат',
         ),
         BotCommand(
             command='help',
@@ -28,4 +38,4 @@ async def set_commands(bot: Bot):
                         'Раз в месяц вы будете получать 10% токенов от всех рефералов',
         ),
     ]
-    await bot.set_my_commands(commands, BotCommandScopeDefault())
+    await bot.set_my_commands(commands, BotCommandScopeAllPrivateChats())

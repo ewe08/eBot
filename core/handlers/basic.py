@@ -16,17 +16,20 @@ async def add_user(message: Message, chat_id, referral_id, request: Request):
 
 
 async def start_chat(message: Message, request: Request):
-    start_command, *args = message.text.split()
-    if args:
-        referral_id = decode_payload(args[0])
-        await add_user(message, settings.bots.work_chat_id, referral_id, request)
-    await message.answer(
-        'Ну тут типа привет тру ля ля вот ссылка на чат а твой батя гей. Чет такое')
+    if message.chat.type == "private":
+        start_command, *args = message.text.split()
+        if args:
+            referral_id = decode_payload(args[0])
+            await add_user(message, settings.bots.work_chat_id, referral_id, request)
+        await message.answer(
+            ''
+        )
+    else:
+        await message.reply('Отправляйте эту команду в личные сообщения бота')
 
 
 async def new_message(message: Message, request: Request):
-    a = await request.check_user(message.from_user.id, message.chat.id)
-    if not a:
+    if not await request.check_user(message.from_user.id, message.chat.id):
         await request.add_data(
             message.from_user.id,
             message.from_user.username,
