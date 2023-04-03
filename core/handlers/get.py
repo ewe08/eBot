@@ -42,7 +42,7 @@ async def get_profile(message: Message, request: Request):
 async def get_stats(message: Message, request: Request):
     if message.chat.type != 'private':
         data = await request.get_top_users(message.chat.id)
-        response = 'Самые активные:\n'
+        response = 'Самые активные за месяц:\n'
         i = 1
         for el in data:
             user_id, name, score = [x for x in el][0]

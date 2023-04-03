@@ -1,4 +1,6 @@
 import asyncpg
+import re
+
 from core.settings import settings
 
 
@@ -18,12 +20,14 @@ class Request:
         self.connector = connector
 
     async def add_data_with_referral(self, user_id, username, fullname, chat_id, referral_id):
+        username = re.sub(r'^[a-zA-Z0-9_]*$', '', username)
         query = f"INSERT INTO datausers (user_id, full_name, username, chat_id, referral) " \
                 f"VALUES ({user_id}, '{fullname}', '{username}', {chat_id}, {referral_id}) " \
                 f"ON CONFLICT (id) DO UPDATE SET full_name='{fullname}'"
         await self.connector.execute(query)
 
     async def add_data(self, user_id, username, fullname, chat_id):
+        username = re.sub(r'^[a-zA-Z0-9_]*$', '', username)
         query = f"INSERT INTO datausers (user_id, full_name, username, chat_id) " \
                 f"VALUES ({user_id}, '{fullname}', '{username}', {chat_id}) " \
                 f"ON CONFLICT (id) DO UPDATE SET full_name='{fullname}'"
