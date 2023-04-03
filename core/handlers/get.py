@@ -39,8 +39,8 @@ async def get_profile(message: Message, request: Request):
         await message.reply('Отправляйте эту команду в личные сообщения бота')
 
 
-async def get_stats(message: Message, bot: Bot, request: Request):
-    if message.chat.type in ['group', 'supergroup']:
+async def get_stats(message: Message, request: Request):
+    if message.chat.type != 'private':
         data = await request.get_top_users(message.chat.id)
         response = 'Самые активные:\n'
         i = 1
@@ -51,3 +51,11 @@ async def get_stats(message: Message, bot: Bot, request: Request):
         await message.reply(response, parse_mode='Markdown')
     else:
         await message.reply('Этот метод используется для чата')
+
+
+async def get_balance(message: Message, request: Request):
+    if message.chat.type != 'private':
+        score = (await request.get_all_score(message.from_user.id, message.chat.id))[0][0]
+        await message.reply(f'Ваш баланс: {score} счастья')
+    else:
+        await message.reply('Это команда для чата')
