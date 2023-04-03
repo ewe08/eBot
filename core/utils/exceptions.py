@@ -18,6 +18,10 @@ class MessageInChatError(Exception):
     pass
 
 
+class NotValueError(Exception):
+    pass
+
+
 class ExceededDailyLimitError(Exception):
     def __init__(self, limit):
         super().__init__()
