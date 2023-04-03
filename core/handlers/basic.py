@@ -18,7 +18,7 @@ async def add_user(message: Message, chat_id, referral_id, request: Request):
 
 async def start_chat(message: Message, request: Request):
     if message.chat.type == "private":
-        if request.check_user(message.from_user.id, settings.bots.work_chat_id):
+        if await request.check_user(message.from_user.id, settings.bots.work_chat_id):
             await message.answer('Клавиатура', reply_markup=reply_keyboard)
         else:
             start_command, *args = message.text.split()
