@@ -24,18 +24,5 @@ async def set_commands_user(bot: Bot):
             command='start',
             description='Начать чат',
         ),
-        BotCommand(
-            command='help',
-            description='Узнать правила бота',
-        ),
-        BotCommand(
-            command='profile',
-            description='Посмотреть свою статистику',
-        ),
-        BotCommand(
-            command='ref',
-            description='Получить реферальную ссылку. '
-                        'Раз в месяц вы будете получать 10% токенов от всех рефералов',
-        ),
     ]
     await bot.set_my_commands(commands, BotCommandScopeAllPrivateChats())

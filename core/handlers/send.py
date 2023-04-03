@@ -2,8 +2,8 @@ from aiogram.types import Message
 
 from core.utils.dbconnect import Request
 from core.utils.exceptions import NotEnoughTokensError
-from core.utils.exceptions import ExceededDailyLimitError, SendingToYourself
-from core.utils.exceptions import SendingToBot
+from core.utils.exceptions import ExceededDailyLimitError, SendingToYourselfError
+from core.utils.exceptions import SendingToBotError, MessageInPrivateError
 
 
 async def send_score(message: Message, request: Request):
@@ -12,10 +12,12 @@ async def send_score(message: Message, request: Request):
         limit = (await request.get_limit(message.from_user.id, message.chat.id))[0][0]
         score = (await request.get_score(message.from_user.id, message.chat.id))[0][0]
 
+        if message.chat.type == 'private':
+            raise MessageInPrivateError
         if message.from_user.id == message.reply_to_message.from_user.id:
-            raise SendingToYourself
+            raise SendingToYourselfError
         if message.reply_to_message.from_user.is_bot:
-            raise SendingToBot
+            raise SendingToBotError
         if value <= 0:
             raise ValueError
         if score < value:
@@ -53,11 +55,15 @@ async def send_score(message: Message, request: Request):
             f'Вы не можете отправить больше 100 в день. '
             f'Сегодня вы можете отправить максимум {100 - e.limit}'
         )
-    except SendingToYourself:
+    except SendingToYourselfError:
         await message.reply(
             'Вы не можете отправить токены самому себе. Зачем?'
         )
-    except SendingToBot:
+    except SendingToBotError:
         await message.reply(
             'Вы не можете отправить токены боту. Зачем?'
+        )
+    except MessageInPrivateError:
+        await message.reply(
+            'Эта команда для чата.'
         )

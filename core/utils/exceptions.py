@@ -2,11 +2,15 @@ class NotEnoughTokensError(Exception):
     pass
 
 
-class SendingToYourself(Exception):
+class SendingToYourselfError(Exception):
     pass
 
 
-class SendingToBot(Exception):
+class SendingToBotError(Exception):
+    pass
+
+
+class MessageInPrivateError(Exception):
     pass
 
 

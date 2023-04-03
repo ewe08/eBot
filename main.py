@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 
 from core.handlers.apshed import collect_data_every_day
@@ -68,12 +68,12 @@ async def start():
     dp.update.middleware.register(DbSession(pull_connect))
     dp.startup.register(start_bot)
 
-    dp.message.register(get_stats, Command(commands=['stats']))
-    dp.message.register(get_help, Command(commands=['help']))
-    dp.message.register(get_profile, Command(commands=['profile']))
-    dp.message.register(send_score, Command(commands=['send']))
-    dp.message.register(get_ref, Command(commands=['ref']))
     dp.message.register(start_chat, Command(commands=['start']))
+    dp.message.register(get_stats, Command(commands=['stats']))
+    dp.message.register(send_score, Command(commands=['send']))
+    dp.message.register(get_help, F.text == 'Помощь')
+    dp.message.register(get_profile, F.text == 'Профиль')
+    dp.message.register(get_ref, F.text == 'Реферальная ссылка')
 
     dp.message.register(new_message)
 
