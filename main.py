@@ -5,7 +5,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 
-from core.handlers.apshed import collect_data_every_day, collect_data_every_week
+from core.handlers.apshed import collect_data_every_day
+from core.handlers.apshed import collect_data_every_week
 from core.handlers.apshed import collect_data_every_month
 from core.handlers.basic import new_message, start_chat
 from core.handlers.get import get_stats, get_help, get_profile
@@ -13,18 +14,13 @@ from core.handlers.send import send_score
 from core.handlers.ref import get_ref
 from core.middlewares.dbmiddleware import DbSession
 from core.settings import settings
-from core.utils.commands import set_commands
+from core.utils.commands import set_commands_chat, set_commands_user
 from core.utils.dbconnect import create_pool
 
 
 async def start_bot(bot: Bot):
-    await set_commands(bot)
-    # await bot.send_message(settings.bots.admin_id, text='Бот запущен')
-
-
-async def stop_bot(bot: Bot):
-    pass
-    await bot.send_message(settings.bots.admin_id, text='Бот остановлен')
+    await set_commands_chat(bot)
+    await set_commands_user(bot)
 
 
 async def start():
@@ -34,6 +30,8 @@ async def start():
                '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
     )
     bot = Bot(token=settings.bots.bot_token, parse_mode='HTML')
+    await bot.delete_webhook(drop_pending_updates=True)
+
     pull_connect = await create_pool()
 
     scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
@@ -69,7 +67,6 @@ async def start():
     dp = Dispatcher()
     dp.update.middleware.register(DbSession(pull_connect))
     dp.startup.register(start_bot)
-    dp.shutdown.register(stop_bot)
 
     dp.message.register(get_stats, Command(commands=['stats']))
     dp.message.register(get_help, Command(commands=['help']))
@@ -82,7 +79,7 @@ async def start():
 
     try:
         scheduler.start()
-        await dp.start_polling(bot)
+        await dp.start_polling(bot, skip_updates=True)
     finally:
         await bot.session.close()
 

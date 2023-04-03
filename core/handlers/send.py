@@ -1,20 +1,26 @@
 from aiogram.types import Message
 
-from core.handlers.basic import new_message
 from core.utils.dbconnect import Request
-from core.utils.exceptions import NotEnoughTokensError, ExceededDailyLimitError
+from core.utils.exceptions import NotEnoughTokensError
+from core.utils.exceptions import ExceededDailyLimitError, SendingToYourself
+from core.utils.exceptions import SendingToBot
 
 
 async def send_score(message: Message, request: Request):
-    # await new_message(message, request)
     try:
         value = int(message.text.split()[1])
         limit = (await request.get_limit(message.from_user.id, message.chat.id))[0][0]
         score = (await request.get_score(message.from_user.id, message.chat.id))[0][0]
 
+        if message.from_user.id == message.reply_to_message.from_user.id:
+            raise SendingToYourself
+        if message.reply_to_message.from_user.is_bot:
+            raise SendingToBot
+        if value <= 0:
+            raise ValueError
         if score < value:
             raise NotEnoughTokensError
-        if limit + value > 200:
+        if limit + value > 100:
             raise ExceededDailyLimitError(limit)
 
         await request.update_limit(message.from_user.id, message.chat.id, value)
@@ -33,7 +39,7 @@ async def send_score(message: Message, request: Request):
         )
     except ValueError:
         await message.reply('Аргумент должен быть натуральным числом')
-    except AttributeError:
+    except IndexError:
         await message.reply(
             'Ты должен ответить на сообщение пользователя, кому надо токены передать, дурик'
         )
@@ -44,6 +50,14 @@ async def send_score(message: Message, request: Request):
         )
     except ExceededDailyLimitError as e:
         await message.reply(
-            f'Вы не можете отправить больше 200 в день. '
-            f'Сегодня вы можете отправить максимум {200 - e.limit}'
+            f'Вы не можете отправить больше 100 в день. '
+            f'Сегодня вы можете отправить максимум {100 - e.limit}'
+        )
+    except SendingToYourself:
+        await message.reply(
+            'Вы не можете отправить токены самому себе. Зачем?'
+        )
+    except SendingToBot:
+        await message.reply(
+            'Вы не можете отправить токены боту. Зачем?'
         )
