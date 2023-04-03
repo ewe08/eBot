@@ -3,11 +3,14 @@ from aiogram.types import Message
 from core.utils.dbconnect import Request
 from core.utils.exceptions import NotEnoughTokensError
 from core.utils.exceptions import ExceededDailyLimitError, SendingToYourselfError
-from core.utils.exceptions import SendingToBotError, MessageInPrivateError
+from core.utils.exceptions import SendingToBotError, MessageInPrivateError, NotValueError
 
 
 async def send_score(message: Message, request: Request):
     try:
+        args = message.text.split()
+        if len(args) == 1:
+            raise NotValueError
         value = int(message.text.split()[1])
         limit = (await request.get_limit(message.from_user.id, message.chat.id))[0][0]
         score = (await request.get_score(message.from_user.id, message.chat.id))[0][0]
@@ -39,6 +42,8 @@ async def send_score(message: Message, request: Request):
         await message.answer(
             f'{message.reply_to_message.from_user.full_name} успешно получил токены'
         )
+    except NotValueError:
+        await message.reply('Укажи, сколько ты перевести хочешь-то')
     except ValueError:
         await message.reply('Аргумент должен быть натуральным числом')
     except IndexError:
