@@ -10,9 +10,13 @@ async def set_commands_chat(bot: Bot):
         ),
         BotCommand(
             command='send',
-            description='Передать свои токены(200 в день). '
+            description='Передать свои токены(100 в день). '
                         'Чтобы отправить - ответь на сообщение того, '
                         'кому хочешь отправить командой /send {сумма}',
+        ),
+        BotCommand(
+            command='balance',
+            description='Посмотреть свое счастье.'
         ),
     ]
     await bot.set_my_commands(commands, BotCommandScopeAllGroupChats())

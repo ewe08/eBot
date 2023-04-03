@@ -52,6 +52,10 @@ class Request:
         query = f"SELECT (score) FROM datausers WHERE user_id={user_id} AND chat_id={chat_id}"
         return await self.connector.fetch(query)
 
+    async def get_all_score(self, user_id, chat_id):
+        query = f"SELECT (all_score) FROM datausers WHERE user_id={user_id} AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
     async def update_score(self, user_id, chat_id, value):
         query = f"UPDATE datausers " \
                 f"SET (score, all_score) = (score + {value}, all_score + {value}) " \
