@@ -1,5 +1,7 @@
+from aiogram import Bot
 from aiogram.types import Message
 
+from core.settings import settings
 from core.utils.dbconnect import Request
 
 
@@ -25,7 +27,7 @@ async def get_profile(message: Message, request: Request):
     # [0id, 1user_id, 2chat_id, 3username, 4full_name, 5score,]
     # [6for_day, 7for_week, 8send_in_day, 9all_score]
     if message.chat.type == 'private':
-        data = (await request.get_all_data(message.from_user.id, message.chat.id))[0]
+        data = (await request.get_all_data(message.from_user.id, settings.bots.work_chat_id))[0]
         await message.answer(
             f'{data[4]}:\n'
             f'1. За этот месяц вы заработали: {data[5]}\n'
@@ -37,12 +39,15 @@ async def get_profile(message: Message, request: Request):
         await message.reply('Отправляйте эту команду в личные сообщения бота')
 
 
-async def get_stats(message: Message, request: Request):
-    data = await request.get_top_users(message.chat.id)
-    response = ''
-    i = 1
-    for el in data:
-        user_id, name, score = [x for x in el][0]
-        response += f'{i}. {name} - {score} счастья\n'
-        i += 1
-    await message.reply(response, parse_mode='Markdown')
+async def get_stats(message: Message, bot: Bot, request: Request):
+    if message.chat.type in ['group', 'supergroup']:
+        data = await request.get_top_users(message.chat.id)
+        response = 'Самые активные:\n'
+        i = 1
+        for el in data:
+            user_id, name, score = [x for x in el][0]
+            response += f'{i}. {name} - {score} счастья\n'
+            i += 1
+        await message.reply(response, parse_mode='Markdown')
+    else:
+        await message.reply('Этот метод используется для чата')
