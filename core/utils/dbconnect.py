@@ -15,22 +15,27 @@ async def create_pool():
     )
 
 
+def double_quote(string):
+    if string is None:
+        return string
+    return string.replace("'", "''")
+
+
 class Request:
     def __init__(self, connector: asyncpg.pool.Pool):
         self.connector = connector
 
     async def add_data_with_referral(self, user_id, username, fullname, chat_id, referral_id):
-        username = re.sub(r'^[a-zA-Z0-9_]*$', '', username)
         query = f"INSERT INTO datausers (user_id, full_name, username, chat_id, referral) " \
-                f"VALUES ({user_id}, '{fullname}', '{username}', {chat_id}, {referral_id}) " \
-                f"ON CONFLICT (id) DO UPDATE SET full_name='{fullname}'"
+                f"VALUES ({user_id}, '{double_quote(fullname)}', '{double_quote(username)}', {chat_id}, {referral_id}) " \
+                f"ON CONFLICT (id) DO UPDATE SET full_name='{double_quote(fullname)}'"
         await self.connector.execute(query)
 
     async def add_data(self, user_id, username, fullname, chat_id):
-        username = re.sub(r'^[a-zA-Z0-9_]*$', '', username)
+        double_quote(fullname)
         query = f"INSERT INTO datausers (user_id, full_name, username, chat_id) " \
-                f"VALUES ({user_id}, '{fullname}', '{username}', {chat_id}) " \
-                f"ON CONFLICT (id) DO UPDATE SET full_name='{fullname}'"
+                f"VALUES ({user_id}, '{double_quote(fullname)}', '{double_quote(username)}', {chat_id}) " \
+                f"ON CONFLICT (id) DO UPDATE SET full_name='{double_quote(fullname)}'"
         await self.connector.execute(query)
 
     async def check_user(self, user_id, chat_id):
