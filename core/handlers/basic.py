@@ -1,4 +1,3 @@
-import re
 from aiogram.types import Message
 from aiogram.utils.deep_linking import decode_payload
 
@@ -20,14 +19,15 @@ async def add_user(message: Message, chat_id, referral_id, request: Request):
 async def start_chat(message: Message, request: Request):
     if message.chat.type == "private":
         if await request.check_user(message.from_user.id, settings.bots.work_chat_id):
-            await message.answer('Клавиатура', reply_markup=reply_keyboard)
+            await message.answer('С возвращением', reply_markup=reply_keyboard)
         else:
             start_command, *args = message.text.split()
             if args:
                 referral_id = decode_payload(args[0])
                 await add_user(message, settings.bots.work_chat_id, referral_id, request)
             await message.answer(
-                'Вот ссылка на чат, Добро Пожаловать. ...'
+                'Вот ссылка на чат, Добро Пожаловать. ...',
+                reply_markup=reply_keyboard,
             )
     else:
         await message.reply('Отправляйте эту команду в личные сообщения бота')
@@ -47,3 +47,4 @@ async def new_message(message: Message, request: Request):
             await request.update_referral_score(referral, message.chat.id, 0.1)
         await request.update_score(message.from_user.id, message.chat.id, 1)
         await request.update_day_data(message.from_user.id, message.chat.id, 1)
+        await request.update_messages_for_week(message.from_user.id, message.chat.id, 1)
