@@ -6,7 +6,11 @@ async def set_commands_chat(bot: Bot):
     commands = [
         BotCommand(
             command='stats',
-            description='Показать самых богатых',
+            description='Показать самых богатых за месяц',
+        ),
+        BotCommand(
+            command='week_stats',
+            description='Показать самых богатых за неделю',
         ),
         BotCommand(
             command='send',

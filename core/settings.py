@@ -10,6 +10,7 @@ class Bots:
     admin_chat_id: int
     work_chat_id: int
 
+
 @dataclass
 class DataBase:
     user: str

@@ -1,5 +1,4 @@
 import asyncpg
-import re
 
 from core.settings import settings
 
@@ -50,6 +49,11 @@ class Request:
     async def get_top_users(self, chat_id):
         query = f"SELECT (user_id, full_name, score) FROM datausers " \
                 f"WHERE chat_id={chat_id} ORDER BY score DESC LIMIT 10"
+        return await self.connector.fetch(query)
+
+    async def get_top_week_users(self, chat_id):
+        query = f"SELECT (user_id, full_name, messages_for_week) FROM datausers " \
+                f"WHERE chat_id={chat_id} ORDER BY messages_for_week DESC LIMIT 10"
         return await self.connector.fetch(query)
 
     async def get_score_in_chat(self, chat_id):
@@ -149,5 +153,20 @@ class Request:
 
     async def set_week_data(self, user_id, chat_id, value):
         query = f"UPDATE datausers SET for_week = {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def get_messages_for_week(self, user_id, chat_id):
+        query = f"SELECT (messages_for_week) FROM datausers " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
+    async def update_messages_for_week(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET messages_for_week = messages_for_week + {value} " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
+    async def set_messages_for_week(self, user_id, chat_id, value):
+        query = f"UPDATE datausers SET messages_for_week = {value} " \
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)

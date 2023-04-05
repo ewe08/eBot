@@ -9,12 +9,13 @@ from core.utils.exceptions import SendingToBotError, MessageInPrivateError, NotV
 async def send_score(message: Message, request: Request):
     try:
         args = message.text.split()
+        if not message.reply_to_message:
+            raise AttributeError
         if len(args) == 1:
             raise NotValueError
         value = int(message.text.split()[1])
         limit = (await request.get_limit(message.from_user.id, message.chat.id))[0][0]
         score = (await request.get_score(message.from_user.id, message.chat.id))[0][0]
-
         if message.chat.type == 'private':
             raise MessageInPrivateError
         if message.from_user.id == message.reply_to_message.from_user.id:
@@ -46,7 +47,7 @@ async def send_score(message: Message, request: Request):
         await message.reply('Укажи, сколько ты перевести хочешь-то')
     except ValueError:
         await message.reply('Аргумент должен быть натуральным числом')
-    except IndexError:
+    except AttributeError:
         await message.reply(
             'Ты должен ответить на сообщение пользователя, кому надо токены передать, дурик'
         )

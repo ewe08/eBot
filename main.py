@@ -9,7 +9,7 @@ from core.handlers.apshed import collect_data_every_day
 from core.handlers.apshed import collect_data_every_week
 from core.handlers.apshed import collect_data_every_month
 from core.handlers.basic import new_message, start_chat
-from core.handlers.get import get_stats, get_help, get_profile, get_balance
+from core.handlers.get import get_stats, get_help, get_profile, get_balance, get_week_stats
 from core.handlers.give import give_score
 from core.handlers.send import send_score
 from core.handlers.ref import get_ref
@@ -41,6 +41,8 @@ async def start():
         trigger='cron',
         hour=18,
         kwargs={
+            'bot': bot,
+            'admin_chat_id': settings.bots.admin_chat_id,
             'chat_id': settings.bots.work_chat_id,
         }
     )
@@ -50,6 +52,8 @@ async def start():
         day_of_week='mon',
         hour=18,
         kwargs={
+            'bot': bot,
+            'admin_chat_id': settings.bots.admin_chat_id,
             'chat_id': settings.bots.work_chat_id,
         }
     )
@@ -71,6 +75,7 @@ async def start():
 
     dp.message.register(start_chat, Command(commands=['start']))
     dp.message.register(get_stats, Command(commands=['stats']))
+    dp.message.register(get_week_stats, Command(commands=['week_stats']))
     dp.message.register(get_balance, Command(commands=['balance']))
     dp.message.register(send_score, Command(commands=['send']))
     dp.message.register(give_score, Command(commands=['give']))
