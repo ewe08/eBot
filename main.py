@@ -6,8 +6,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 
 from core.handlers.apshed import collect_data_every_day
-from core.handlers.apshed import collect_data_every_week
-from core.handlers.apshed import collect_data_every_month
+from core.handlers.apshed import collect_data_every_week, collect_data_every_month
 from core.handlers.basic import new_message, start_chat
 from core.handlers.get import get_stats, get_help, get_profile, get_balance, get_week_stats
 from core.handlers.give import give_score
