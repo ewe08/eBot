@@ -34,8 +34,17 @@ async def start_chat(message: Message, request: Request):
 
 
 async def new_message(message: Message, request: Request):
+    if message.chat.id != settings.bots.work_chat_id:
+        return
     if not await request.check_user(message.from_user.id, message.chat.id):
         await request.add_data(
+            message.from_user.id,
+            message.from_user.username,
+            message.from_user.full_name,
+            message.chat.id,
+        )
+    else:
+        await request.update_user(
             message.from_user.id,
             message.from_user.username,
             message.from_user.full_name,

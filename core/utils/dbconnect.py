@@ -42,6 +42,12 @@ class Request:
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         return await self.connector.fetch(query)
 
+    async def update_user(self, user_id, username, full_name, chat_id):
+        query = f"UPDATE datausers " \
+                f"SET (username, full_name) = ('{double_quote(username)}', '{double_quote(full_name)}') " \
+                f"WHERE user_id={user_id} AND chat_id={chat_id}"
+        await self.connector.execute(query)
+
     async def get_all_data(self, user_id, chat_id):
         query = f"SELECT * FROM datausers WHERE user_id={user_id} AND chat_id={chat_id}"
         return await self.connector.fetch(query)

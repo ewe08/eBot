@@ -35,7 +35,17 @@ async def send_score(message: Message, request: Request):
             message.chat.id,
             value,
         )
+        await request.update_messages_for_week(
+            message.reply_to_message.from_user.id,
+            message.chat.id,
+            value,
+        )
         await request.update_score(
+            message.from_user.id,
+            message.chat.id,
+            -value,
+        )
+        await request.update_messages_for_week(
             message.from_user.id,
             message.chat.id,
             -value,
