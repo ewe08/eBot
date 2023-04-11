@@ -9,7 +9,7 @@ from core.handlers.apshed import collect_data_every_day
 from core.handlers.apshed import collect_data_every_week, collect_data_every_month
 from core.handlers.basic import new_message, start_chat
 from core.handlers.get import get_stats, get_help, get_profile, get_balance, get_week_stats
-from core.handlers.give import give_score
+from core.handlers.give import give_score, remove_score
 from core.handlers.send import send_score
 from core.handlers.ref import get_ref
 from core.middlewares.dbmiddleware import DbSession
@@ -78,6 +78,7 @@ async def start():
     dp.message.register(get_balance, Command(commands=['balance']))
     dp.message.register(send_score, Command(commands=['send']))
     dp.message.register(give_score, Command(commands=['give']))
+    dp.message.register(remove_score, Command(commands=['remove']))
 
     dp.message.register(get_help, F.text == 'Помощь')
     dp.message.register(get_profile, F.text == 'Профиль')
