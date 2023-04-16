@@ -13,7 +13,7 @@ async def get_help(message: Message):
         text = ''.join(
             open(path, encoding='UTF-8')
             .readlines())
-        await message.answer(text)
+        await message.answer(text, parse_mode='Markdown')
     else:
         await message.reply('Отправляйте эту команду в личные сообщения бота')
 
