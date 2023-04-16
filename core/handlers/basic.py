@@ -26,7 +26,7 @@ async def start_chat(message: Message, request: Request):
                 referral_id = decode_payload(args[0])
                 await add_user(message, settings.bots.work_chat_id, referral_id, request)
             await message.answer(
-                'Вот ссылка на чат, Добро Пожаловать. ...',
+                'Вот ссылка на чат, Добро Пожаловать. https://t.me/eCryptoParadise',
                 reply_markup=reply_keyboard,
             )
     else:
