@@ -48,6 +48,10 @@ class Request:
                 f"WHERE user_id={user_id} AND chat_id={chat_id}"
         await self.connector.execute(query)
 
+    async def get_user_id_by_username(self, username, chat_id):
+        query = f"SELECT (user_id) FROM datausers WHERE username='{username}' AND chat_id={chat_id}"
+        return await self.connector.fetch(query)
+
     async def get_all_data(self, user_id, chat_id):
         query = f"SELECT * FROM datausers WHERE user_id={user_id} AND chat_id={chat_id}"
         return await self.connector.fetch(query)
