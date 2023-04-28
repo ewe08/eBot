@@ -23,11 +23,13 @@ async def get_profile(message: Message, request: Request):
     # [6for_day, 7for_week, 8send_in_day, 9all_score]
     if message.chat.type == 'private':
         data = (await request.get_all_data(message.from_user.id, settings.bots.work_chat_id))[0]
+        ref_score = (await request.get_referral_score(message.from_user.id, settings.bots.work_chat_id))[0][0]
         await message.answer(
             f'{data[4]}:\n'
             f'1. За этот месяц вы заработали: {data[5]}\n'
             f'2. За все время: {data[9]}\n'
             f'3. За сегодня(без учета переводов): {data[6]}\n'
+            f'4. В конце месяца за реферала вы получите: {int(ref_score)}\n'
             f'5. За эту неделю вы активничали ровно {data[7]} дней (необходимо минимум 50 сообщений)\n'
         )
     else:
